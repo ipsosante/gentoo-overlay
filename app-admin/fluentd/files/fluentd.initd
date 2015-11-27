@@ -1,0 +1,28 @@
+#!/sbin/runscript
+
+depend() {
+    need net
+}
+
+start_pre() {
+    checkpath -d -m 0775 -o ${FLUENTD_USER}:${FLUENTD_GROUP} /run/fluentd
+}
+
+start() {
+    ebegin "Starting ${SVCNAME}"
+    start-stop-daemon \
+	--start \
+	--exec fluentd \
+	--user ${FLUENTD_USER} \
+	--group ${FLUENTD_GROUP} \
+	--background \
+	--make-pidfile --pidfile "${FLUENTD_PID}" \
+	-- --config "${FLUENTD_CONF}" --plugin "${FLUENTD_PLUGIN}" --log /var/log/fluentd/fluentd.log -vv
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${SVCNAME}"
+    start-stop-daemon --stop --pidfile "${FLUENTD_PID}" --retry=TERM/30/KILL/5
+    eend $?
+}
