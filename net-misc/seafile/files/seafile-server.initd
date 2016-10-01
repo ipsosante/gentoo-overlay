@@ -1,0 +1,54 @@
+#!/sbin/runscript
+# Copyright 1999-2010 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Header: $
+
+USER='seafile'
+GROUP='seafile'
+
+CCNET_PIDFILE="/var/run/seafile/ccnet.pid"
+SEAFILE_PIDFILE="/var/run/seafile/server.pid"
+
+CCNET_CONF_DIR='/var/lib/seafile/ccnet/'
+SEAFILE_CONF_DIR='/var/lib/seafile/conf/'
+SEAFILE_DATA_DIR='/mnt/data/seafile/'
+
+depend() {
+	need net
+}
+
+start() {
+	ebegin "Starting Seafile service"
+
+        if ! [ -d /var/run/seafile ]; then
+                ebegin "Creating /var/run/seafile"
+                mkdir /var/run/seafile \
+                        && chown seafile:seafile /var/run/seafile \
+                        && chmod 777 /var/run/seafile
+                eend $?
+        fi
+
+	#
+	# ccnet-server -F /var/lib/seafile/conf/ -c /var/lib/seafile/ccnet/ -f /var/lib/seafile/ccnet/logs/ccnet.log -d -P /pids/ccnet.pid
+	# 
+	# seaf-server -F /var/lib/seafile/conf/ -c /var/lib/seafile/ccnet/ -d /mnt/data/seafile/ -l /var/lib/seafile/ccnet/logs/seafile.log -P /pids/seaf-server.pid
+	#
+
+	start-stop-daemon --start --quiet \
+		--chuid "${USER}" --user "${USER}" --group "${GROUP}" --exec ccnet-server \
+		-- -F "${SEAFILE_CONF_DIR}" -c "${CCNET_CONF_DIR}" -f /var/log/seafile/ccnet.log -d -P "${CCNET_PIDFILE}"
+	eend $?
+
+	start-stop-daemon --start --quiet \
+		--chuid "${USER}" --user "${USER}" --group "${GROUP}" --exec seaf-server \
+		-- -F "${SEAFILE_CONF_DIR}" -c "${CCNET_CONF_DIR}" -d /mnt/data/seafile/ -l /var/log/seafile/seafile.log -P "${SEAFILE_PIDFILE}"
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping Seafile service"
+	start-stop-daemon --stop --pidfile "${CCNET_PIDFILE}"
+	eend $?
+	start-stop-daemon --stop --pidfile "${SEAFILE_PIDFILE}"
+	eend $?
+}
