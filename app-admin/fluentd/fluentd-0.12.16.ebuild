@@ -6,9 +6,8 @@ EAPI=5
 
 inherit user
 
-USE_RUBY="ruby22"
+USE_RUBY="ruby22 ruby23"
 
-USE_RUBY="ruby22"
 RUBY_FAKEGEM_TASK_DOC=""
 RUBY_FAKEGEM_TASK_TEST="test"
 RUBY_FAKEGEM_EXTRADOC=""

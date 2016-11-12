@@ -1,6 +1,7 @@
 EAPI=4
 
-USE_RUBY="ruby19 ruby20 ruby21 ruby22"
+USE_RUBY="ruby19 ruby20 ruby21 ruby22 ruby23"
+
 RUBY_FAKEGEM_NAME="sigdump"
 
 inherit ruby-fakegem
