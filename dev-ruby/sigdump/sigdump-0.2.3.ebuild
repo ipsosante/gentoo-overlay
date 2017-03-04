@@ -1,6 +1,6 @@
 EAPI=4
 
-USE_RUBY="ruby19 ruby20 ruby21 ruby22 ruby23"
+USE_RUBY="ruby23 ruby24"
 
 RUBY_FAKEGEM_NAME="sigdump"
 
