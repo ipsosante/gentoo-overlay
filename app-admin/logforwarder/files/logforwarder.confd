@@ -1,0 +1,9 @@
+
+LOGFORWARDER_USER="root"
+LOGFORWARDER_GROUP="root"
+
+LOGFORWARDER_PID="/run/logforwarder.pid"
+
+LOGFORWARDER_CONF="/etc/logforwarder.conf"
+
+LOGFORWARDER_LOGFILE="/var/log/logforwarder/logforwarder.log"

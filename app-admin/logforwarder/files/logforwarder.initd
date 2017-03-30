@@ -1,0 +1,33 @@
+#!/sbin/openrc-run
+
+depend() {
+    need net
+    before logger
+}
+
+start_pre() {
+    checkpath -f -m 0664 -o ${LOGFORWARDER_USER}:${LOGFORWARDER_GROUP} ${LOGFORWARDER_PID}
+    checkpath -d -m 0775 -o ${LOGFORWARDER_USER}:${LOGFORWARDER_GROUP} /var/log/logforwarder/
+    checkpath -f -m 0664 -o ${LOGFORWARDER_USER}:${LOGFORWARDER_GROUP} /var/log/logforwarder/logforwarder.log
+}
+
+start() {
+    ebegin "Starting ${SVCNAME}"
+    start-stop-daemon \
+	--start \
+	--exec logforwarder \
+	--user ${LOGFORWARDER_USER} \
+	--group ${LOGFORWARDER_GROUP} \
+	--background \
+	--make-pidfile --pidfile "${LOGFORWARDER_PID}" \
+	-1 "${LOGFORWARDER_LOGFILE}" \
+	-2 "${LOGFORWARDER_LOGFILE}" \
+	-- --config "${LOGFORWARDER_CONF}" -v
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping ${SVCNAME}"
+    start-stop-daemon --stop --pidfile "${LOGFORWARDER_PID}" --retry=TERM/30/KILL/5
+    eend $?
+}
