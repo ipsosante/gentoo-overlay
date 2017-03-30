@@ -2,9 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 # Created by Martin Kupec
 
-EAPI=4
+EAPI=5
 
-inherit user eutils python autotools
+PYTHON_COMPAT=( python2_7 )
+
+inherit user eutils python-single-r1 autotools
 
 DESCRIPTION="Cloud file syncing software"
 HOMEPAGE="http://www.seafile.com"
@@ -22,6 +24,7 @@ DEPEND="
 	virtual/pkgconfig
 	dev-libs/jansson
 	dev-libs/libevent
+	app-arch/libarchive
 	fuse? ( sys-fs/fuse )
 	client? ( =net-libs/ccnet-6.0.0[client] )
 	server? ( =net-libs/ccnet-6.0.0[server] )"
@@ -30,8 +33,7 @@ RDEPEND=""
 S=${WORKDIR}/${PN}-${PV}-server
 
 pkg_setup() {
-	python_set_active_version 2
-	python_pkg_setup
+	python-single-r1_pkg_setup
 }
 
 pkg_preinst() {
