@@ -1,0 +1,11 @@
+--- openldap-2.4.44.orig/contrib/slapd-modules/passwd/pbkdf2/pw-pbkdf2.c	2018-03-06 14:06:37.907011544 +0100
++++ openldap-2.4.44/contrib/slapd-modules/passwd/pbkdf2/pw-pbkdf2.c	2018-03-06 14:06:15.640513952 +0100
+@@ -37,7 +37,7 @@
+ #endif
+ 
+ #define PBKDF2_ITERATION 10000
+-#define PBKDF2_SALT_SIZE 16
++#define PBKDF2_SALT_SIZE 12
+ #define PBKDF2_SHA1_DK_SIZE 20
+ #define PBKDF2_SHA256_DK_SIZE 32
+ #define PBKDF2_SHA512_DK_SIZE 64
