@@ -1,8 +1,0 @@
-
-FLUENTD_USER=fluentd
-FLUENTD_GROUP=fluentd
-
-FLUENTD_PID="/run/fluentd/flunetd.pid"
-
-FLUENTD_CONF="/etc/fluentd/fluentd.conf"
-FLUENTD_PLUGIN="/etc/fluentd/plugin/"
