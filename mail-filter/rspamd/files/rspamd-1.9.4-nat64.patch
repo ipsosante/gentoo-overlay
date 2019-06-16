@@ -1,0 +1,51 @@
+--- rspamd-1.8.1/src/libutil/addr.c	2019-06-16 13:05:13.694615506 +0200
++++ rspamd-1.8.1-nat64/src/libutil//addr.c	2019-06-16 13:06:30.186433039 +0200
+@@ -805,6 +805,24 @@
+ 	}
+ 
+ 	if (ret && target) {
++
++		// Translate IPv6 with 64:ff9b prefixe to IPv4.
++
++		if (addr && addr->af == AF_INET6) {
++			static char addr_str[INET6_ADDRSTRLEN + 1];
++			const char *string = inet_ntop (addr->af, &addr->u.in.addr.s6.sin6_addr,
++				addr_str, sizeof (addr_str));
++			if (strncmp (string, "64:ff9b::", strlen("64:ff9b::")) == 0) {
++				rspamd_inet_addr_t *addr_v4 = NULL;
++				addr_v4 = rspamd_inet_addr_create (AF_INET, pool);
++				memcpy (&addr_v4->u.in.addr.s4.sin_addr, addr->u.in.addr.s6.sin6_addr.s6_addr + 12,
++					sizeof (struct in_addr));
++				rspamd_inet_address_set_port (addr_v4, rspamd_inet_address_get_port (addr));
++				//rspamd_inet_address_free(addr);
++				addr = addr_v4;
++			}
++		}
++
+ 		*target = addr;
+ 	}
+ 
+@@ -1016,6 +1034,23 @@
+ 		return -1;
+ 	}
+ 
++	// Force to connect in IPv6 with 64:ff9b prefixe for IPv4 translation.
++	const char* addr_str;
++	addr_str = rspamd_inet_address_to_string (addr);
++        if ((addr->af == AF_INET) && (strncmp (addr_str, "127.0.0.1", strlen("127.0.0.1")) != 0)) {
++		rspamd_inet_addr_t *addr_v6 = NULL;
++		addr_v6 = rspamd_inet_addr_create (AF_INET6, NULL);
++
++		static char addr_v6_str[INET6_ADDRSTRLEN + 1];
++		strcpy(addr_v6_str, "64:ff9b::");
++		strcat(addr_v6_str, addr_str);
++		inet_pton(AF_INET6, addr_v6_str, &addr_v6->u.in.addr.s6.sin6_addr);
++
++		rspamd_inet_address_set_port (addr_v6, rspamd_inet_address_get_port (addr));
++
++		addr = addr_v6;
++	}
++
+ 	fd = rspamd_socket_create (addr->af, type, 0, async);
+ 	if (fd == -1) {
+ 		return -1;
